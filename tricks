@@ -1,0 +1,28 @@
+#List of tricky questions and answers for the interview:
+#____________________
+#1. ls disabled (unable to use ls or ll or any other) 
+find . -maxdepth 1 -printf "%M\t%u\t%g\t%p\n"
+
+#or 
+
+echo *
+____________________
+
+#2. If /bin/chmod is chmoded to 0444 ot 0000
+
+#Several ways: 
+#1) Using perl: 
+
+perl -e 'chmod 0755, "/bin/chmod"'
+#perl has it's own wrapper so it wont use defauult *nix command placed on /bin/ paths.
+
+#2) Using default linux dyncamic loader: - 
+
+#32 OS:
+/lib/ld-linux.so /bin/chmod +x /bin/chmod  
+
+#64 OS:
+/lib64/ld-linux-x86-64.so.2 /bin/chmod +x /bin/chmod
+
+#3) Using rsync:
+rsync -p --chmod
