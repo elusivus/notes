@@ -34,8 +34,20 @@ _____________________________________________________________________________
 Как сбросить пароль root в MySQL? FreeBSD? Linux? *
 Your answer
 
+FreeBSD: 
+/usr/local/etc/rc.d/mysql-server stop
+mysqld_safe --skip-grant-tables &
+mysql -u root
+use mysql;
+update user
+set password=PASSWORD('NEWPASSWORD')
+where user='root';
+flush privileges;
+/usr/local/etc/rc.d/mysql-server start
+
 https://forums.freebsd.org/threads/26738/
 https://www.unix-ninja.com/p/Resetting_the_MySQL_root_password_in_FreeBSD
+https://ua.godaddy.com/help/reset-your-root-mysql-password-linux-17548
 _____________________________________________________________________________
 Какие способы авторизации реализованы в OpenVPN? зачем нужен ключ Диффи-Хелмана? *
 Your answer
@@ -85,6 +97,23 @@ VMDK *
 
 _____________________________________________________________________________
 Как создать GRE тоннель? знакомы ли с OSPF? чем он лучше RIP? *
+GRE tunnel on freeBSD: 
+
+host1:
+# ifconfig gre0 create
+# ifconfig gre0 192.168.10.1 192.168.10.2 netmask 255.255.255.0 
+# ifconfig gre0 tunnel 10.0.2.1 10.0.1.1
+
+host2: 
+# ifconfig gre0 create
+# ifconfig gre0 192.168.10.2 192.168.10.1 netmask 255.255.255.0
+# ifconfig gre0 tunnel 10.0.1.1 10.0.2.1
+
+OSPF - протокол динамической маршрутизации использующий технологии отслеживания состояния канала. Использует link state routing (LSR) протокол и 
+Лет 6 тому во время обучения настраивал на Cisco packet tracer в рамках лабораторной работы при прохождении курса подготовки к ccna. Реального опыта работы с OSPF в продакшене не имею. 
+RIP - протокол довольно старый и использовался в силу своей простоты. Использует количество хопов в качестве метрики, ограничен 15 хопами. Редко используется из-за низкой производительности и малой масштабируемости. 
+
+OSPF не использует транспортный протокол который инкапсулирует свои данные непосредственно в IP-пакеты. OSPF реализует собственные функции обнаружения и исправления ошибок транспортного уровня. 
 _____________________________________________________________________________
 Что такое DNS? зачем он нужен? *
 Your answer
