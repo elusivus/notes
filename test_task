@@ -45,6 +45,19 @@ where user='root';
 flush privileges;
 /usr/local/etc/rc.d/mysql-server start
 
+CentOS7:
+
+sudo systemctl stop mariadb.service
+sudo mysqld_safe --skip-grant-tables
+mysql -u root
+use mysql;
+update user set password=PASSWORD("NEWPASSWORD") where User='root';
+flush privileges;
+sudo systemctl start mariadb.service
+
+
+
+
 https://forums.freebsd.org/threads/26738/
 https://www.unix-ninja.com/p/Resetting_the_MySQL_root_password_in_FreeBSD
 https://ua.godaddy.com/help/reset-your-root-mysql-password-linux-17548
