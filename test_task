@@ -195,10 +195,18 @@ Your answer
 4-й
 _____________________________________________________________________________
 на сервере cPanel обнаружена спам атака, которую необходимо пресечь. опишите ваши действия. *
-Locate top script sending to Exim:
+
+
+Проверить очередь:
+exim -bpr | grep "<" | awk {'print $4'} | cut -d "<" -f 2 | cut -d ">" -f 1 | sort -n | uniq -c | sort -n
+
+    29  admin@testdomain.in
+  124  arun@test123domain.com
+
+Местоположение скриптов которые шлют на exim: 
 grep cwd /var/log/exim_mainlog | grep -v /var/spool | awk -F"cwd=" '{print $2}' | awk '{print $1}' | sort | uniq -c | sort -n
 
-Example: 
+Пример:
 11 /home/user/public_html/about-us
 27 /home/user/public_html
 7681 /home/user/public_html/data
@@ -208,8 +216,9 @@ drwxr-xr-x 17 user user 4.0K Jan 20 10:25 ../
 -rw-r--r-- 1 user user 5.6K Feb 20 11:27 mailer.php
 drwxr-xr-x 2 user user 4.0K Jan 20 11:27 ./
 
-mailer.php is our vulnerable file. 
+mailer.php уязвимый файл.
 
+Вытянуть количествово конектов из логов:
 grep "mailer.php" /home/user/access-logs/dom.com | awk '{print $1}' | sort -n | uniq -c | sort -n
 
 25 123.123.123.126
@@ -217,13 +226,13 @@ grep "mailer.php" /home/user/access-logs/dom.com | awk '{print $1}' | sort -n | 
 29 123.123.123.124
 7681 123.123.123.123
 
-123.123.123.123 IP address should be blocked from accessing the server to avoid further abuse .
-You can block it via iptables or any other software. Also, advised to set captcha on such scripts to avoid further abuse of the script _____________________________________________________________________________
+7681 123.123.123.123 IP адрес должен быть заблокирован как источник отправки спама. Так-же рекомендовать установку капчи на скрипты для отправки почты чтобы избежать таких проблем в будущем. 
+_____________________________________________________________________________
 за что отвечает компонент cPanel - cphulkd? как его можно включить/выключить используя commandline? *
 
 cphulkd - защита от брутфорса
-whmapi1 configureservice service=cphulkd enabled=1 monitored=1
-whmapi1 configureservice service=cphulkd enabled=0 monitored=0
+/scripts/restartsrv_cphulkd --status #проверить статус
+/scripts/restartsrv_cphulkd # перезагрузить
 _____________________________________________________________________________
 как узнать, используя командную строку, какому из пользователей cPanel принадлежит домен somedomain.org? 
 
@@ -235,18 +244,33 @@ grep $username /etc/trueuserowners
 _____________________________________________________________________________
 как проверить, действительна ли лицензия WHM/cPanel? как обновить лицензию? *
 
-Проверка:
-echo ip="IPADDR"|lynx -dump http://verify.cpanel.net/index.cgi -post_data
+Получить свой внешний адрес: 
+curl -L http://cpanel.net/showip.cgi 
 
-Обновление:
+echo ip="123.123.123.123"|lynx -dump http://verify.cpanel.net/index.cgi -post_data
+
+Запуск обновленя 
 /usr/local/cpanel/cpkeyclt
 _____________________________________________________________________________
 как добавить/убрать модуль PHP в cPanel из командной строки? *
+
 yum install ea-php56-php-mbstring
+yum uninstall ea-php56-php-mbstring
+ea-php56-php-mbstring - в качестве примера. ea- префикс easy apache, php56 - префикс версии php, mbstring название самого модуля. 
 _____________________________________________________________________________
 какие аналоги WHM/cPanel вы знаете? *
-_____________________________________________________________________________
+
 
 Parallels Plesk Panel
 DirectAdmin
 ISPmanager Lite
+_____________________________________________________________________________
+работали ли вы с проектами high-load? если да, то какого типа балансировщики использовали? какие пиковые нагрузки испытывал проект? в чем заключалась ваша роль в проекте?
+_____________________________________________________________________________
+зачем нужен Puppet? Chef?
+_____________________________________________________________________________
+что вам известно о DPI?
+_____________________________________________________________________________
+имели ли дело с Docker? Ansible? расскажите подробней об опыте работы с ними.
+_____________________________________________________________________________
+имели ли дело с BGP? как реализован протокол VRRP в Linux? FreeBSD? в чем отличие iBGP и eBGP? приведите схему null-route с помощью blackholing.
